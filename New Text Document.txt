@@ -1,0 +1,3 @@
+https://www.tutorialspoint.com/sqlite/sqlite_java.htm
+https://docs.dataabstract.com/Java/Tutorials/TodoTutorial/relativityserver/
+https://www.tutorialspoint.com/jdbc/jdbc-create-database.htm
