@@ -2,7 +2,9 @@ package com.remobjects.dataabstract;
 
 import com.remobjects.dataabstract.data.DataTable;
 import com.remobjects.dataabstract.swing.DataTableModel;
-import com.sun.org.apache.xerces.internal.util.URI;
+//import com.sun.org.apache.xerces.internal.util.URI;
+import com.sun.org.apache.xerces.internal.util.URI.MalformedURIException;
+import com.remobjects.dataabstract.*;
 import java.net.*;
 public class DataModule {
 	
@@ -23,9 +25,15 @@ public class DataModule {
 	
 	//The argument to create is the URI of an instance of Relativity Server. In this case to an instance running on the local machine.
 	public void initComponents() {
-		this.dataAdapter = RemoteDataAdapter.create(URI.create("http://localhost:7099/bin")); 
+		URI uri = null;
+		try {
+			uri = new URI("http://localhost:7100/bin");
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		this.dataAdapter = RemoteDataAdapter.create(uri);
 	}
-	
 	//Here we instantiate two DataTable classes, passing in the name of the table they will match to on the server.
 	//We then create a DataTableModel object which takes a DataTable as an argument. 
 	//Then finally we add a listener for the TableChangedEvent event, which is sent when the data or structure of the table is changed.
@@ -42,8 +50,34 @@ public class DataModule {
 	
 	//add a helper method which returns the DataTableModel for the Tasks table, we need this to pass to the JTable
 	public DataTableModel getTasksDataTableModel() {
-		return tasksTableModel;
+		return this.tasksTableModel;
 		
+	}
+	//create the login method which takes two String arguments which are uses to create a new String that is passed to the RemoteDataAdapter.
+	public boolean login(String username, String password) {
+	    String loginString = String.format("User=%s;Password=%s;Domain=%s;Schema=%s", 
+	            username, password, "ToDoList", "Tasks");
+	    System.out.println("loginString: " + loginString);
+	    return this.dataAdapter.login(loginString);
+	}
+	//
+	public void loadData() {
+	    DataTable[] tables = {this.tasksTable, this.prioritiesTable};
+	    
+	    this.tasksTable.clear();
+	    this.tasksTable.getColumns().clear();
+	    
+	   this.dataAdapter.fill(tables);
+//	    this.dataAdapter.fillAsync(tables,requestInfo, new FillRequestTask.Callback() {
+//	        @Override
+//	        public void completed(FillRequestTask aTask, Object aState) {
+//	            if (aTask.isCancelled() || aTask.isFailed()) {  
+//	                System.out.printf("An error occured: %s\n", aTask.getFailureCause().getMessage());
+//	            } else {
+//	                System.out.println("success");
+//	            }
+//	        }
+//	    }).execute();
 	}
 }
 	
